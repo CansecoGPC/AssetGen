@@ -1,3 +1,17 @@
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 3
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software Foundation,
+#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 import bpy
 
 # //////////////////- Bake Material- ///////////////////////
@@ -48,7 +62,7 @@ def DEF_pbrShader_add(context,size,name ):
 		
     #Add basecolor
     ###############
-    I_basecolor = bpy.data.images.get("T_"+name+"_D")
+    I_basecolor = bpy.data.images.get("T_"+name+"_A")
 
 	#Add metallic
     ###############
@@ -98,19 +112,30 @@ def DEF_pbrShader_add(context,size,name ):
 
     d_image = nodes.new("ShaderNodeTexImage")
     d_image.location = (-80,-350)
-    d_image.image = I_Normal 
-    #d_image.color_space = 'NONE'
-
+    d_image.image = I_Normal
+    #d_image.image.colorspace_settings.name = 'Non-Color'
     
-    d_2   = nodes.new("ShaderNodeNormalMap")
-    d_2.location = (190,-350)
+    normal = nodes.new("ShaderNodeNormalMap")
+    normal.location = (400,-350)
+    
+    gamma = nodes.new("ShaderNodeGamma")
+    gamma.location = (200,-350)
+    gamma.inputs[1].default_value = 2.2
+    
+    math = nodes.new("ShaderNodeMath")
+    math.location = (200,-500)
+    math.operation = 'DIVIDE' 
+    math.inputs[0].default_value = 1
+    math.inputs[1].default_value = 2.2
 
-    links.new( d_2.inputs['Color'], d_image.outputs['Color'])
+    links.new(d_image.outputs['Color'], gamma.inputs['Color'])
+    
+    links.new(math.outputs['Value'], gamma.inputs['Gamma'])
+    links.new(gamma.outputs['Color'], normal.inputs['Color'])
+    links.new(normal.outputs['Normal'], d_1.inputs['Normal'])
 
-    links.new( d_1.inputs['Normal'], d_2.outputs['Normal'])
 
-
-    d_5   = nodes.new("ShaderNodeOutputMaterial")
+    d_5 = nodes.new("ShaderNodeOutputMaterial")
     d_5.location = (300,300)
 
     links.new( d_5.inputs['Surface'], d_1.outputs[0])

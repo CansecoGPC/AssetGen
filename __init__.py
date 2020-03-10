@@ -1,12 +1,29 @@
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 3
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software Foundation,
+#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 import bpy
 
 bl_info = {
     "name" : "AssetGen",
     "author" : "Srdan Ignjatovic aka zero025 (kica025@gmail.com) and Bekhoucha Danyl aka Linko (dbekhouc@gmail.com)",
-    "description" : "",
+    "version": (1, 0, 0),
     "blender" : (2, 80, 0),
-    "location" : "",
+    "location" : "View3D",
+    "description" : "AssetGen is a free add-on (GPL License) that automates the tasks to get game assets ready for video games from an High Poly model.",
     "warning" : "",
+    "wiki_url": "https://github.com/Linko-3D/AssetGen",
+    "tracker_url": "https://github.com/Linko-3D/AssetGen/issues",
     "category" : "Game Tool"
 }
 
@@ -68,10 +85,24 @@ class GA_Props(bpy.types.PropertyGroup):
    ga_samplecount : bpy.props.IntProperty(
         name="Sample Count",
 		description = "Increasing this value will reduce the noise on your texture for the Ambient Occlusion and SSS, but it will increase the baking time",
-        default=8,
+        default=16,
         min = 1		
    )  
 
+   ga_remesh : bpy.props.BoolProperty(
+        name = 'Remesh',
+        description = "Will perform a remesh to merge every meshes and remove every intersections",
+        default = True
+   )
+
+   ga_voxelsize : bpy.props.FloatProperty(
+        name = 'Voxel Size',
+        description = "The amount of temporary extrusion used on your low poly during the baking. A value too low will reveal intersections, a value too high can create new intersections between concave shapes and generate wavy edges. After generating your low poly if the result isn't correct, use the Solidify modifier on the low poly, change the offset to 1 and tweak the thickness by holding shift until it envelops the high poly to find the right value, then generate your asset again",
+        default = 0.01,
+        min = 0.001,
+        max = 10
+   )       
+   
    ga_ao : bpy.props.BoolProperty(
         name = 'Bake AO',
         description = "Will bake the AO map separately ideal for PBR materials. Do not include an AO node in your base color shader",
@@ -135,7 +166,7 @@ class GA_Props(bpy.types.PropertyGroup):
    ga_cagesize : bpy.props.FloatProperty(
         name = 'Cage Size',
         description = "The amount of temporary extrusion used on your low poly during the baking. A value too low will reveal intersections, a value too high can create new intersections between concave shapes and generate wavy edges. After generating your low poly if the result isn't correct, use the Solidify modifier on the low poly, change the offset to 1 and tweak the thickness by holding shift until it envelops the high poly to find the right value, then generate your asset again",
-        default = 0.05,
+        default = 0.03,
         min = 0,
         max = 1		
    )       
@@ -143,7 +174,7 @@ class GA_Props(bpy.types.PropertyGroup):
    ga_edgepadding : bpy.props.IntProperty(
         name = 'Edge Padding',
         description = "The amount of pixels that goes beyond the UV seam. A value too low can reveal the seam, a value too high takes more time to calculate",
-        default = 16,
+        default = 8,
         min = 0,
         max = 64
    )   
@@ -159,7 +190,7 @@ class GA_Props(bpy.types.PropertyGroup):
    ga_uvangle : bpy.props.IntProperty(
         name = 'UV Angle',
         description = "The step angle where your UV Map must create an UV Seam. If the value is too low the UV Map will contain many individual faces, the game engine will need more calculations to display your textures. A value too high could create overlapping and not optimize the texel density (space available) resulting in a low texture quality",
-        default = 45,
+        default = 66,
         min = 1,
         max = 89		
    )
@@ -196,47 +227,49 @@ class GA_Props(bpy.types.PropertyGroup):
 
 classes = [
     GA_Props,
-    GA_user_interface.GA_generatePanel,
-    GA_user_interface.GA_advancedPanel,
-    GA_user_interface.GA_toolsPanel,
+    GA_user_interface.GA_PT_generatePanel,
+    GA_user_interface.GA_PT_advancedPanel,
+    GA_user_interface.GA_PT_toolsPanel,
     GA.GA_Start,
-    GA_tools.GA_Tools_HighPoly,
-    GA_tools.GA_Tools_Wear,
+    GA_tools.GA_PT_Tools_HighPoly,
+    GA_tools.GA_PT_Tools_Wear,
 
-	GA_tools.GA_Tools_Apply,
-    GA_tools.GA_Tools_ResymX,
-    GA_tools.GA_Tools_CutHalf,
-	GA_tools.GA_Tools_FixNormals,
-	GA_tools.GA_Tools_FlipNormals,
-	GA_tools.GA_Tools_Union,
-	GA_tools.GA_Tools_Dyntopo,
-    GA_tools.GA_Tools_Optimize,
-    GA_tools.GA_Tools_DissolveUnnecessary,
-    GA_tools.GA_Tools_Polycount,
-	GA_tools.GA_Tools_OnTheGround,
+	GA_tools.GA_PT_Tools_Apply,
+    GA_tools.GA_PT_Tools_ResymX,
+    GA_tools.GA_PT_Tools_CutHalf,
+	GA_tools.GA_PT_Tools_FixNormals,
+	GA_tools.GA_PT_Tools_FlipNormals,
+	GA_tools.GA_PT_Tools_Union,
+	GA_tools.GA_PT_Tools_Dyntopo,
+	GA_tools.GA_PT_Tools_Subsurf,
+    GA_tools.GA_PT_Tools_Optimize,
+    GA_tools.GA_PT_Tools_DissolveUnnecessary,
+    GA_tools.GA_PT_Tools_Polycount,
+	GA_tools.GA_PT_Tools_OnTheGround,
+    GA_tools.GA_PT_Tools_UnrealTransforms,
 
-	GA_tools.GA_Tools_BaseMesh,
-	GA_tools.GA_Tools_BoltCubic,
-	GA_tools.GA_Tools_BoltCylinder,
-	GA_tools.GA_Tools_ChainHexagon,
-	GA_tools.GA_Tools_ChainSquare,
-	GA_tools.GA_Tools_Crack,
-	GA_tools.GA_Tools_ExtrudedCurve,
-	GA_tools.GA_Tools_ExtrudedMesh,
-	GA_tools.GA_Tools_Hair,
-	GA_tools.GA_Tools_RingCircle,
-	GA_tools.GA_Tools_RingSquare,
-	GA_tools.GA_Tools_Rope,
-	GA_tools.GA_Tools_StrapCircle,
-	GA_tools.GA_Tools_StrapHandle,
-	GA_tools.GA_Tools_StrapLine,
+	GA_tools.GA_PT_Tools_BaseMesh,
+	GA_tools.GA_PT_Tools_BoltCubic,
+	GA_tools.GA_PT_Tools_BoltCylinder,
+	GA_tools.GA_PT_Tools_ChainHexagon,
+	GA_tools.GA_PT_Tools_ChainSquare,
+	GA_tools.GA_PT_Tools_Crack,
+	GA_tools.GA_PT_Tools_ExtrudedCurve,
+	GA_tools.GA_PT_Tools_ExtrudedMesh,
+	GA_tools.GA_PT_Tools_Hair,
+	GA_tools.GA_PT_Tools_RingCircle,
+	GA_tools.GA_PT_Tools_RingSquare,
+	GA_tools.GA_PT_Tools_Rope,
+	GA_tools.GA_PT_Tools_StrapCircle,
+	GA_tools.GA_PT_Tools_StrapHandle,
+	GA_tools.GA_PT_Tools_StrapLine,
 
-    GA_tools.GA_Tools_Axe,
-	GA_tools.GA_Tools_Shield,
-	GA_tools.GA_Tools_Shoulder,
-    GA_tools.GA_Tools_Sword,
+    GA_tools.GA_PT_Tools_Axe,
+	GA_tools.GA_PT_Tools_Shield,
+	GA_tools.GA_PT_Tools_Shoulder,
+    GA_tools.GA_PT_Tools_Sword,
 	
-    GA_tools.GA_Tools_Potion,
+    GA_tools.GA_PT_Tools_Potion,
 ]
 
 

@@ -1,3 +1,17 @@
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 3
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software Foundation,
+#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 import  bpy, os ,time, random
 
 from .GA_material import DEF_material_add
@@ -68,6 +82,7 @@ class GA_Start(bpy.types.Operator):
 		smoothHP = myscene.ga_smoothHP
 		smoothLP = myscene.ga_smoothLP
 		imposter = myscene.ga_imposter
+		remesh = myscene.ga_remesh
 
 		
 
@@ -164,8 +179,6 @@ class GA_Start(bpy.types.Operator):
 			bpy.ops.object.convert(target='MESH')
 			bpy.ops.object.join()
 
-			bpy.context.object.data.use_auto_smooth = False			
-			
 			if smoothHP == 1:
 				bpy.ops.object.shade_smooth()
 			else:
@@ -188,11 +201,17 @@ class GA_Start(bpy.types.Operator):
 			# Generating the low poly
 
 			bpy.ops.object.duplicate_move(OBJECT_OT_duplicate={"linked":False, "mode":'TRANSLATION'}, TRANSFORM_OT_translate={"value":(0, 0, 0), "orient_type":'GLOBAL', "orient_matrix":((0, 0, 0), (0, 0, 0), (0, 0, 0)), "orient_matrix_type":'GLOBAL', "constraint_axis":(False, False, False), "mirror":False, "use_proportional_edit":False, "proportional_edit_falloff":'SMOOTH', "proportional_size":1, "use_proportional_connected":False, "use_proportional_projected":False, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "cursor_transform":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
-
 			
 			bpy.context.object.name = "tmpLP"
+			if remesh:
+				print("Remeshing...")
+				bpy.context.object.data.remesh_voxel_size = myscene.ga_voxelsize
+				#bpy.context.object.data.use_remesh_fix_poles = False
+				#bpy.context.object.data.use_remesh_smooth_normals = True
+				#bpy.context.object.data.use_remesh_preserve_volume = False
+				bpy.ops.object.voxel_remesh()
+				print("Remesh complete")
 
-			
 			## Remove every material slots on the low poly only if the bake_textures mode is enabled
 
 			if bake_textures == 1:
@@ -491,7 +510,7 @@ class GA_Start(bpy.types.Operator):
 			print("\nBaking the diffuse map...")
 			
 			#Create Material
-			DEF_material_add(context,size,name,"D")	
+			DEF_material_add(context,size,name,"A")	
 
 			bpy.data.objects['tmpLP'].active_material = bpy.data.materials["Bake"]
 			

@@ -1,7 +1,21 @@
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 3
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software Foundation,
+#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 import  bpy
 
 
-class GA_Tools_HighPoly(bpy.types.Operator):
+class GA_PT_Tools_HighPoly(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolshighpoly"
 	bl_label = "High Poly Conversion"
@@ -31,7 +45,7 @@ class GA_Tools_HighPoly(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_Wear(bpy.types.Operator):
+class GA_PT_Tools_Wear(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolswear"
 	bl_label = "Edge Wear"
@@ -58,7 +72,7 @@ class GA_Tools_Wear(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_Apply(bpy.types.Operator):
+class GA_PT_Tools_Apply(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolapply"
 	bl_label = "Apply Meshes"
@@ -70,7 +84,7 @@ class GA_Tools_Apply(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_ResymX(bpy.types.Operator):
+class GA_PT_Tools_ResymX(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolresymx"
 	bl_label = "Resym X"
@@ -89,7 +103,7 @@ class GA_Tools_ResymX(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_CutHalf(bpy.types.Operator):
+class GA_PT_Tools_CutHalf(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolcuthalf"
 	bl_label = "Cut Half"
@@ -108,7 +122,7 @@ class GA_Tools_CutHalf(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_FixNormals(bpy.types.Operator):
+class GA_PT_Tools_FixNormals(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolfixnormals"
 	bl_label = "Fix Normals"
@@ -125,7 +139,7 @@ class GA_Tools_FixNormals(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_FlipNormals(bpy.types.Operator):
+class GA_PT_Tools_FlipNormals(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolflipnormals"
 	bl_label = "Flip Normals"
@@ -142,7 +156,7 @@ class GA_Tools_FlipNormals(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_Union(bpy.types.Operator):
+class GA_PT_Tools_Union(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolunion"
 	bl_label = "Union/Fill/Fix"
@@ -201,7 +215,7 @@ class GA_Tools_Union(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_Dyntopo(bpy.types.Operator):
+class GA_PT_Tools_Dyntopo(bpy.types.Operator):
 
 	bl_idname = "scene.ga_tooldyntopo"
 	bl_label = "Dyntopo"
@@ -218,13 +232,25 @@ class GA_Tools_Dyntopo(bpy.types.Operator):
 		bpy.ops.sculpt.dynamic_topology_toggle()
 		
 		bpy.context.scene.tool_settings.unified_paint_settings.size = 100
-		bpy.context.scene.tool_settings.sculpt.detail_size = 6
+		bpy.context.scene.tool_settings.sculpt.detail_size = 8
 		bpy.context.scene.tool_settings.unified_paint_settings.use_unified_strength = True
 		bpy.context.scene.tool_settings.unified_paint_settings.strength = 1
 
 		return {'FINISHED'}
 
-class GA_Tools_Optimize(bpy.types.Operator):
+class GA_PT_Tools_Subsurf(bpy.types.Operator):
+
+	bl_idname = "scene.ga_toolsubsurf"
+	bl_label = "Subsurf"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	def execute(self, context):
+		bpy.ops.object.subdivision_set(level=1, relative=False)
+		bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Subdivision")
+
+		return {'FINISHED'}
+
+class GA_PT_Tools_Optimize(bpy.types.Operator):
 
 	bl_idname = "scene.ga_tooloptimize"
 	bl_label = "Reduce Polycount"
@@ -243,7 +269,7 @@ class GA_Tools_Optimize(bpy.types.Operator):
 
 		return {'FINISHED'}			
 
-class GA_Tools_DissolveUnnecessary(bpy.types.Operator):
+class GA_PT_Tools_DissolveUnnecessary(bpy.types.Operator):
 
 	bl_idname = "scene.ga_tooldissolveunnecessary"
 	bl_label = "Dissolve Unnecessary"
@@ -262,7 +288,7 @@ class GA_Tools_DissolveUnnecessary(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_OnTheGround(bpy.types.Operator):
+class GA_PT_Tools_OnTheGround(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolontheground"
 	bl_label = "On The Ground"
@@ -275,7 +301,22 @@ class GA_Tools_OnTheGround(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_Polycount(bpy.types.Operator):
+class GA_PT_Tools_UnrealTransforms(bpy.types.Operator):
+
+	bl_idname = "scene.ga_unrealtransforms"
+	bl_label = "Unreal Transforms"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	def execute(self, context):
+
+		bpy.context.object.rotation_euler[0] = 1.5708
+		bpy.context.object.rotation_euler[1] = 1.5708
+
+		bpy.ops.transform.resize(value=(100, 100, 100), constraint_axis=(False, False, False), orient_type='GLOBAL', mirror=False, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1)
+
+		return {'FINISHED'}
+
+class GA_PT_Tools_Polycount(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolpolycount"
 	bl_label = "Get polycount"
@@ -290,7 +331,7 @@ class GA_Tools_Polycount(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_BaseMesh(bpy.types.Operator):
+class GA_PT_Tools_BaseMesh(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolbasemesh"
 	bl_label = "Base Mesh"
@@ -320,7 +361,7 @@ class GA_Tools_BaseMesh(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_BoltCubic(bpy.types.Operator):
+class GA_PT_Tools_BoltCubic(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolboltcubic"
 	bl_label = "Bolt Cubic"
@@ -377,7 +418,7 @@ class GA_Tools_BoltCubic(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_BoltCylinder(bpy.types.Operator):
+class GA_PT_Tools_BoltCylinder(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolboltcylinder"
 	bl_label = "Bolt Cylinder"
@@ -424,7 +465,7 @@ class GA_Tools_BoltCylinder(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_ChainHexagon(bpy.types.Operator):
+class GA_PT_Tools_ChainHexagon(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolchainhexagon"
 	bl_label = "Chain Hexagon"
@@ -468,7 +509,7 @@ class GA_Tools_ChainHexagon(bpy.types.Operator):
 		bpy.context.active_object.modifiers.new("Subdivision", 'SUBSURF')
 		bpy.context.object.modifiers["Subdivision"].levels = 2
 		
-		bpy.ops.object.modifier_add(type='ARRAY')
+		bpy.context.active_object.modifiers.new("Array", 'ARRAY')
 		bpy.context.object.modifiers["Array"].relative_offset_displace[0] = 0
 		bpy.context.object.modifiers["Array"].relative_offset_displace[2] = -0.75
 		
@@ -484,11 +525,11 @@ class GA_Tools_ChainHexagon(bpy.types.Operator):
 
 		bpy.ops.object.shade_smooth()
 		
-		bpy.context.object.name = "Chain 1"
+		bpy.context.object.name = "Chain Hexagon"
 
 		return {'FINISHED'}
 
-class GA_Tools_ChainSquare(bpy.types.Operator):
+class GA_PT_Tools_ChainSquare(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolchainsquare"
 	bl_label = "Chain Square"
@@ -537,11 +578,11 @@ class GA_Tools_ChainSquare(bpy.types.Operator):
 
 		bpy.ops.object.shade_smooth()
 
-		bpy.context.object.name = "Chain 2"
+		bpy.context.object.name = "Chain Square"
 
 		return {'FINISHED'}
 
-class GA_Tools_Crack(bpy.types.Operator):
+class GA_PT_Tools_Crack(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolcrack"
 	bl_label = "Crack Boolean"
@@ -649,7 +690,7 @@ class GA_Tools_Crack(bpy.types.Operator):
 		bpy.context.object.name = "Crack Boolean"
 		return {'FINISHED'}
 
-class GA_Tools_ExtrudedCurve(bpy.types.Operator):
+class GA_PT_Tools_ExtrudedCurve(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolextrudedcurve"
 	bl_label = "Extruded Curve"
@@ -670,7 +711,7 @@ class GA_Tools_ExtrudedCurve(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_ExtrudedMesh(bpy.types.Operator):
+class GA_PT_Tools_ExtrudedMesh(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolextrudedmesh"
 	bl_label = "Extruded Mesh"
@@ -712,7 +753,7 @@ class GA_Tools_ExtrudedMesh(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_Hair(bpy.types.Operator):
+class GA_PT_Tools_Hair(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolhair"
 	bl_label = "Hair/Fur"
@@ -799,7 +840,7 @@ class GA_Tools_Hair(bpy.types.Operator):
 		
 		return {'FINISHED'}
 
-class GA_Tools_RingCircle(bpy.types.Operator):
+class GA_PT_Tools_RingCircle(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolringcircle"
 	bl_label = "Ring Circle"
@@ -826,10 +867,10 @@ class GA_Tools_RingCircle(bpy.types.Operator):
 		bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
 		bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
 		
-		bpy.context.object.name = "Ring"
+		bpy.context.object.name = "Ring Circle"
 		return {'FINISHED'}
 
-class GA_Tools_RingSquare(bpy.types.Operator):
+class GA_PT_Tools_RingSquare(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolringsquare"
 	bl_label = "Ring Square"
@@ -855,11 +896,11 @@ class GA_Tools_RingSquare(bpy.types.Operator):
 		bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
 		bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
 		
-		bpy.context.object.name = "Ring"
+		bpy.context.object.name = "Ring Square"
 
 		return {'FINISHED'}
 
-class GA_Tools_Rope(bpy.types.Operator):
+class GA_PT_Tools_Rope(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolrope"
 	bl_label = "Rope"
@@ -934,7 +975,7 @@ class GA_Tools_Rope(bpy.types.Operator):
 
 		return {'FINISHED'}
 		
-class GA_Tools_StrapCircle(bpy.types.Operator):
+class GA_PT_Tools_StrapCircle(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolstrapcircle"
 	bl_label = "Strap Circle"
@@ -962,11 +1003,11 @@ class GA_Tools_StrapCircle(bpy.types.Operator):
 		bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
 		bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
 
-		bpy.context.object.name = "Strap"
+		bpy.context.object.name = "Strap Circle"
 
 		return {'FINISHED'}
 
-class GA_Tools_StrapHandle(bpy.types.Operator):
+class GA_PT_Tools_StrapHandle(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolstraphandle"
 	bl_label = "Strap Handle"
@@ -1019,11 +1060,11 @@ class GA_Tools_StrapHandle(bpy.types.Operator):
 		bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='MEDIAN')
 
 
-		bpy.context.object.name = "StrapHandle"
+		bpy.context.object.name = "Strap Handle"
 
 		return {'FINISHED'}
 
-class GA_Tools_StrapLine(bpy.types.Operator):
+class GA_PT_Tools_StrapLine(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolstrapline"
 	bl_label = "Strap Line"
@@ -1047,11 +1088,11 @@ class GA_Tools_StrapLine(bpy.types.Operator):
 		bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
 		bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
 
-		bpy.context.object.name = "Strap"
+		bpy.context.object.name = "Strap Line"
 
 		return {'FINISHED'}
 
-class GA_Tools_Axe(bpy.types.Operator):
+class GA_PT_Tools_Axe(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolaxe"
 	bl_label = "Axe"
@@ -1098,21 +1139,21 @@ class GA_Tools_Axe(bpy.types.Operator):
 		bpy.context.active_object.modifiers.new("Subdivision", 'SUBSURF')
 		bpy.context.object.modifiers["Subdivision"].levels = 2
 
-		bpy.context.object.name = "Strap"
+		bpy.context.object.name = "StrapAxe"
 
 		bpy.ops.object.duplicate_move(OBJECT_OT_duplicate={"linked":False, "mode":'TRANSLATION'}, TRANSFORM_OT_translate={"value":(0, 0, 0.07), "constraint_axis":(False, False, True), "orient_type":'GLOBAL', "mirror":False, "proportional_edit_falloff":'SMOOTH', "proportional_size":1, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
 		bpy.context.object.modifiers["SimpleDeform"].factor = -0.75
 
-		bpy.ops.object.select_pattern(pattern="Strap")
+		bpy.ops.object.select_pattern(pattern="StrapAxe")
 
 		bpy.ops.object.duplicate_move(OBJECT_OT_duplicate={"linked":False, "mode":'TRANSLATION'}, TRANSFORM_OT_translate={"value":(0, 0, 0.14), "constraint_axis":(False, False, True), "orient_type":'GLOBAL', "mirror":False, "proportional_edit_falloff":'SMOOTH', "proportional_size":1, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
 
-		bpy.ops.object.select_pattern(pattern="Strap.001")
-		bpy.ops.object.select_pattern(pattern="Strap")
+		bpy.ops.object.select_pattern(pattern="StrapAxe.001")
+		bpy.ops.object.select_pattern(pattern="StrapAxe")
 
 		bpy.ops.object.convert(target='MESH')
 		bpy.ops.object.join()
-		bpy.context.object.name = "Strap"
+		bpy.context.object.name = "StrapAxe"
 
 		bpy.ops.object.shade_smooth()
 
@@ -1147,7 +1188,7 @@ class GA_Tools_Axe(bpy.types.Operator):
 
 		bpy.ops.object.convert(target='MESH')
 
-		bpy.ops.object.select_pattern(pattern="Strap")
+		bpy.ops.object.select_pattern(pattern="StrapAxe")
 		bpy.ops.object.join()
 		bpy.context.object.name = "AxeBase"
 
@@ -1215,7 +1256,7 @@ class GA_Tools_Axe(bpy.types.Operator):
   
 		return {'FINISHED'}
 
-class GA_Tools_Shield(bpy.types.Operator):
+class GA_PT_Tools_Shield(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolshield"
 	bl_label = "Shield"
@@ -1274,7 +1315,7 @@ class GA_Tools_Shield(bpy.types.Operator):
 
 		return {'FINISHED'}
 		
-class GA_Tools_Shoulder(bpy.types.Operator):
+class GA_PT_Tools_Shoulder(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolshoulder"
 	bl_label = "Shoulder Guard"
@@ -1385,7 +1426,7 @@ class GA_Tools_Shoulder(bpy.types.Operator):
 
 		return {'FINISHED'}
 		
-class GA_Tools_Sword(bpy.types.Operator):
+class GA_PT_Tools_Sword(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolsword"
 	bl_label = "Sword"
@@ -1435,7 +1476,7 @@ class GA_Tools_Sword(bpy.types.Operator):
 		bpy.context.active_object.modifiers.new("Subdivision", 'SUBSURF')
 		bpy.context.object.modifiers["Subdivision"].levels = 2
 
-		bpy.context.object.name = "sword_blade"
+		bpy.context.object.name = "Sword Blade"
 
 		# Hand
 
@@ -1483,7 +1524,7 @@ class GA_Tools_Sword(bpy.types.Operator):
 
 		return {'FINISHED'}
 
-class GA_Tools_Potion(bpy.types.Operator):
+class GA_PT_Tools_Potion(bpy.types.Operator):
 
 	bl_idname = "scene.ga_toolpotion"
 	bl_label = "Potion"

@@ -1,3 +1,17 @@
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 3
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software Foundation,
+#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 import bpy
 from bpy.props import IntProperty, BoolProperty, FloatProperty, EnumProperty, PointerProperty
 from bpy.types import Menu, Panel, AddonPreferences, PropertyGroup, UIList
@@ -5,8 +19,8 @@ from rna_prop_ui import PropertyPanel
 
 
 
-class GA_generatePanel(bpy.types.Panel):
-    bl_idname = "ga.generate"
+class GA_PT_generatePanel(bpy.types.Panel):
+    bl_idname = "GA_PT_generate"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"  
@@ -55,9 +69,17 @@ class GA_generatePanel(bpy.types.Panel):
 		
         row = col_ga.row()		
         row.prop(myscene , "ga_samplecount")
-        col_ga.row().separator()	
+        col_ga.row().separator()
 
         row = col_ga.row()		
+        row.prop(myscene , "ga_remesh")
+        col_ga.row().separator()
+        
+        row = col_ga.row()		
+        row.prop(myscene , "ga_voxelsize")
+        col_ga.row().separator()
+        row = col_ga.row()
+        
         row.prop(myscene , "ga_ao")
         col_ga.row().separator()
 
@@ -105,8 +127,8 @@ class GA_generatePanel(bpy.types.Panel):
         col1_ga.operator("scene.ga_start", icon="FILE_REFRESH")
         col_ga.row().separator()
 		
-class GA_advancedPanel(bpy.types.Panel):
-    bl_idname = "ga.advanced"
+class GA_PT_advancedPanel(bpy.types.Panel):
+    bl_idname = "GA_PT_advanced"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"  
@@ -148,6 +170,10 @@ class GA_advancedPanel(bpy.types.Panel):
         row = col_ga.row()		
         row.prop(myscene , "ga_groundao")
         col_ga.row().separator()
+        
+        row = col_ga.row()		
+        row.prop(myscene , "ga_unrealtransforms")
+        col_ga.row().separator()
 
         row = col_ga.row()		
         row.prop(myscene , "ga_removeunderground")
@@ -163,8 +189,8 @@ class GA_advancedPanel(bpy.types.Panel):
 		
         col_ga.row().separator()		
 		
-class GA_toolsPanel(bpy.types.Panel):
-    bl_idname = "ga.tools"
+class GA_PT_toolsPanel(bpy.types.Panel):
+    bl_idname = "GA_PT_tools"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"  
@@ -201,10 +227,12 @@ class GA_toolsPanel(bpy.types.Panel):
         col1_ga.operator("scene.ga_toolflipnormals", icon="FILE_REFRESH")
         col1_ga.operator("scene.ga_toolunion", icon="FILE_REFRESH")
         col1_ga.operator("scene.ga_tooldyntopo", icon="FILE_REFRESH")
+        col1_ga.operator("scene.ga_toolsubsurf", icon="FILE_REFRESH")
         col1_ga.operator("scene.ga_tooloptimize", icon="FILE_REFRESH")
         col1_ga.operator("scene.ga_tooldissolveunnecessary", icon="FILE_REFRESH")
         col1_ga.operator("scene.ga_toolpolycount", icon="FILE_REFRESH")
         col1_ga.operator("scene.ga_toolontheground", icon="FILE_REFRESH")
+        col1_ga.operator("scene.ga_unrealtransforms", icon="FILE_REFRESH")
 		#-----------------------------------------------------------	
         col_ga = layout.column(align=True)		
         col_ga.label(text="Simple Meshes:")		
